@@ -236,7 +236,35 @@ export default function HomeView() {
                     </button>
                 </div>
             </section>
-
+                 <a 
+                        href="https://wa.me/573001234567?text=Estoy%20interesado%20en%20adquirir%20más%20información%20sobre%20ZapateriasSeguras%20y%20sus%20servicios%20de%20ciberseguridad"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Chatear por WhatsApp"
+                        style={{
+                            position: "fixed",
+                            bottom: "20px",
+                            right: "20px",
+                            zIndex: 1000
+                        }}
+                        >
+                        <div style={{
+                            backgroundColor: "white",
+                            borderRadius: "50%",
+                            padding: "12px",
+                            boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
+                        }}>
+                            <img 
+                            src="https://cdn-icons-png.flaticon.com/512/733/733585.png" 
+                            alt="WhatsApp"
+                            style={{ width: "30px", height: "30px" }}
+                            />
+                        </div>
+                        </a>
             <style>{`
                 .hero-badge {
                     display: inline-flex;

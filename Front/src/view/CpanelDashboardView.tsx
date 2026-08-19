@@ -48,6 +48,15 @@ export default function CpanelDashboardView() {
     const [newTitle, setNewTitle] = useState("")
     const [newDesc, setNewDesc] = useState("")
     const [creating, setCreating] = useState(false)
+    const [tab, setTab] = useState<"courses" | "audit">("courses")
+    const [logs, setLogs] = useState<Array<{
+        id: number
+        email: string | null
+        action: string
+        ip: string | null
+        details: string | null
+        createdAt: string
+    }>>([])
 
     const loadCourses = useCallback(async () => {
         setLoadError(null)
@@ -72,6 +81,13 @@ export default function CpanelDashboardView() {
             return
         }
         loadCourses()
+        fetch(`${API_BASE}/admin/audit-logs`, { headers: authHeaders() })
+            .then(async (res) => {
+                if (!res.ok) return
+                const data = await res.json()
+                setLogs(Array.isArray(data.logs) ? data.logs : [])
+            })
+            .catch(() => undefined)
     }, [navigate, loadCourses])
 
     const logout = () => {
@@ -142,12 +158,69 @@ export default function CpanelDashboardView() {
                     </div>
                 </header>
 
+                <div className="flex gap-2 mb-8">
+                    <button
+                        type="button"
+                        onClick={() => setTab("courses")}
+                        className="px-4 py-2 rounded-lg text-sm"
+                        style={{ background: tab === "courses" ? "#C4622D" : "#3d3d3d" }}
+                    >
+                        Cursos
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setTab("audit")}
+                        className="px-4 py-2 rounded-lg text-sm"
+                        style={{ background: tab === "audit" ? "#C4622D" : "#3d3d3d" }}
+                    >
+                        Registro de seguridad
+                    </button>
+                </div>
+
                 {loadError && (
                     <div className="mb-6">
                         <ErrorMessage>{loadError}</ErrorMessage>
                     </div>
                 )}
 
+                {tab === "audit" && (
+                    <div className="rounded-xl bg-[#2C2C2C] border border-gray-700 overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="text-left text-gray-400 border-b border-gray-700">
+                                    <th className="p-3">Fecha</th>
+                                    <th className="p-3">Acción</th>
+                                    <th className="p-3">Email</th>
+                                    <th className="p-3">IP</th>
+                                    <th className="p-3">Detalle</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {logs.length === 0 && (
+                                    <tr>
+                                        <td className="p-3 text-gray-500" colSpan={5}>
+                                            Aún no hay eventos.
+                                        </td>
+                                    </tr>
+                                )}
+                                {logs.map((log) => (
+                                    <tr key={log.id} className="border-b border-gray-800">
+                                        <td className="p-3 whitespace-nowrap text-gray-300">
+                                            {new Date(log.createdAt).toLocaleString("es-CO")}
+                                        </td>
+                                        <td className="p-3 font-semibold text-white">{log.action}</td>
+                                        <td className="p-3 text-gray-300">{log.email || "—"}</td>
+                                        <td className="p-3 text-gray-400">{log.ip || "—"}</td>
+                                        <td className="p-3 text-gray-400">{log.details || "—"}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
+                {tab === "courses" && (
+                <>
                 <form
                     onSubmit={createCourse}
                     className="mb-10 p-6 rounded-xl bg-[#2C2C2C] border border-gray-700"
@@ -190,6 +263,8 @@ export default function CpanelDashboardView() {
 
                 {courses.length === 0 && !loadError && (
                     <p className="text-center text-gray-500 py-12">No hay cursos todavía.</p>
+                )}
+                </>
                 )}
             </div>
         </div>

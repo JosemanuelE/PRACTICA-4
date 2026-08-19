@@ -36,4 +36,53 @@ CREATE TABLE course_files (
   CONSTRAINT fk_cf_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 
+ALTER TABLE users
+  ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'user',
+  ADD COLUMN email_verified TINYINT(1) NOT NULL DEFAULT 1;
+
+CREATE TABLE auth_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  type VARCHAR(30) NOT NULL,
+  token_hash VARCHAR(64) NOT NULL UNIQUE,
+  expires_at DATETIME NOT NULL,
+  used_at DATETIME NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_token_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE login_guards (
+  identifier VARCHAR(180) PRIMARY KEY,
+  fail_count INT NOT NULL DEFAULT 0,
+  locked_until DATETIME NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE audit_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NULL,
+  email VARCHAR(150) NULL,
+  action VARCHAR(60) NOT NULL,
+  ip VARCHAR(80) NULL,
+  user_agent VARCHAR(255) NULL,
+  details VARCHAR(255) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_audit_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE diagnostics (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  company_name VARCHAR(150) NULL,
+  answers JSON NOT NULL,
+  security_score INT NOT NULL,
+  risk_score INT NOT NULL,
+  weakest_point VARCHAR(150) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_diag_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'Josema123';
+FLUSH PRIVILEGES;
 -- select * from users;

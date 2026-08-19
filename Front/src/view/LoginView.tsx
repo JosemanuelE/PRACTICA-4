@@ -13,6 +13,7 @@ export default function LoginView() {
     const navigate = useNavigate()
     const [submitError, setSubmitError] = useState<string | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [needsVerification, setNeedsVerification] = useState(false)
 
     const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
         defaultValues: { email: "", password: "" },
@@ -27,14 +28,12 @@ export default function LoginView() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             })
+            const data = await res.json().catch(() => ({}))
             if (res.ok) {
-                const data = await res.json()
-                // Guardar el JWT en localStorage
                 if (data.token) setUserToken(data.token)
                 navigate("/pag/cursos", { replace: true })
                 return
             }
-            const data = await res.json().catch(() => ({}))
             const msg =
                 typeof data.message === "string"
                     ? data.message
@@ -42,6 +41,9 @@ export default function LoginView() {
                       ? data.errors[0].msg
                       : "No se pudo iniciar sesión"
             setSubmitError(msg)
+            if (data.code === "EMAIL_NOT_VERIFIED") {
+                setNeedsVerification(true)
+            }
         } catch {
             setSubmitError("No se pudo conectar con el servidor. ¿Está el backend en marcha?")
         } finally {
@@ -160,9 +162,25 @@ export default function LoginView() {
                             {errors.password && (
                                 <ErrorMessage>{errors.password.message}</ErrorMessage>
                             )}
+                            <Link
+                                to="/auth/forgot-password"
+                                className="text-xs font-semibold no-underline hover:underline self-start"
+                                style={{ color: "#C4622D" }}
+                            >
+                                ¿Olvidaste tu contraseña?
+                            </Link>
                         </div>
 
                         {submitError && <ErrorMessage>{submitError}</ErrorMessage>}
+                        {needsVerification && (
+                            <p className="text-xs" style={{ color: "#444" }}>
+                                ¿No te llegó el correo?{" "}
+                                <Link to="/auth/forgot-password" className="font-semibold" style={{ color: "#C4622D" }}>
+                                    Revisa también spam
+                                </Link>
+                                {" "}o vuelve a registrarte con el mismo email para pedir el reenvío desde la pantalla de registro.
+                            </p>
+                        )}
 
                         <button
                             type="submit"

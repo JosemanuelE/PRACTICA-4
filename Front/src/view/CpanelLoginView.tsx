@@ -1,4 +1,4 @@
-import { useState, FormEvent } from "react"
+import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
 import { API_BASE, ADMIN_TOKEN_KEY } from "../config/api"
 import ErrorMessage from "../components/ErrorMessage"

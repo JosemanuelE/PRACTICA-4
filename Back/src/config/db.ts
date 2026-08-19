@@ -1,9 +1,13 @@
 import colors from "colors";
-import { Sequelize } from "sequelize";
-import { initUserModel } from "../models/User";
+import { DataTypes, Sequelize } from "sequelize";
+import User, { initUserModel } from "../models/User";
 import Course, { initCourseModel } from "../models/Course";
 import CourseVideo, { initCourseVideoModel } from "../models/CourseVideo";
 import CourseFile, { initCourseFileModel } from "../models/CourseFile";
+import Diagnostic, { initDiagnosticModel } from "../models/Diagnostic";
+import AuthToken, { initAuthTokenModel } from "../models/AuthToken";
+import AuditLog, { initAuditLogModel } from "../models/AuditLog";
+import { initLoginGuardModel } from "../models/LoginGuard";
 
 export let sequelize: Sequelize;
 
@@ -34,6 +38,25 @@ const seedCoursesIfEmpty = async () => {
     console.log(colors.green("Cursos iniciales creados (sin videos ni PDFs)."));
 };
 
+const ensureUserSecurityColumns = async () => {
+    const qi = sequelize.getQueryInterface();
+    const columns = await qi.describeTable("users");
+    if (!columns.role) {
+        await qi.addColumn("users", "role", {
+            type: DataTypes.STRING(20),
+            allowNull: false,
+            defaultValue: "user",
+        });
+    }
+    if (!columns.email_verified && !columns.emailVerified) {
+        await qi.addColumn("users", "email_verified", {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+        });
+    }
+};
+
 const connectBD = async () => {
     try {
         sequelize = new Sequelize(
@@ -53,6 +76,29 @@ const connectBD = async () => {
         initCourseModel(sequelize);
         initCourseVideoModel(sequelize);
         initCourseFileModel(sequelize);
+        initDiagnosticModel(sequelize);
+        initAuthTokenModel(sequelize);
+        initAuditLogModel(sequelize);
+        initLoginGuardModel(sequelize);
+
+        User.hasMany(Diagnostic, {
+            foreignKey: "userId",
+            as: "diagnostics",
+            onDelete: "CASCADE",
+        });
+        Diagnostic.belongsTo(User, { foreignKey: "userId" });
+        User.hasMany(AuthToken, {
+            foreignKey: "userId",
+            as: "authTokens",
+            onDelete: "CASCADE",
+        });
+        AuthToken.belongsTo(User, { foreignKey: "userId" });
+        User.hasMany(AuditLog, {
+            foreignKey: "userId",
+            as: "auditLogs",
+            onDelete: "SET NULL",
+        });
+        AuditLog.belongsTo(User, { foreignKey: "userId" });
 
         Course.hasMany(CourseVideo, {
             foreignKey: "courseId",
@@ -68,6 +114,7 @@ const connectBD = async () => {
         CourseFile.belongsTo(Course, { foreignKey: "courseId" });
 
         await sequelize.sync();
+        await ensureUserSecurityColumns();
         await seedCoursesIfEmpty();
     } catch (error) {
         console.error(

@@ -1,14 +1,13 @@
 import { Link, Outlet, useNavigate } from "react-router-dom"
-import { useState } from "react"
 import { isLoggedIn, removeUserToken } from "../config/api"
 
 export default function Layout() {
-    const [open, setOpen] = useState(false)
+    
     const navigate = useNavigate()
     const loggedIn = isLoggedIn()
 
     const handleVerCursos = () => {
-        setOpen(false)
+        
         if (loggedIn) {
             navigate("/pag/cursos")
         } else {
@@ -18,7 +17,7 @@ export default function Layout() {
 
     const handleLogout = () => {
         removeUserToken()
-        setOpen(false)
+        
         navigate("/pag/home", { replace: true })
         // Forzar re-render
         window.location.reload()
@@ -60,10 +59,26 @@ export default function Layout() {
                         Cursos
                     </button>
 
-                    <Link to="/pag/home" style={{ color: "#444", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}
+                    <Link to="/pag/leyes" style={{ color: "#444", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}
                         className="hover:text-[#C4622D] transition-colors">
-                        Nosotros
+                        Leyes
                     </Link>
+
+                    <Link to="/pag/diagnostico" style={{
+                        background: "rgba(196,98,45,0.1)", color: "#C4622D",
+                        textDecoration: "none", fontSize: "0.875rem", fontWeight: 600,
+                        padding: "0.3rem 0.85rem", borderRadius: 100,
+                        border: "1px solid rgba(196,98,45,0.3)",
+                    }}>
+                        🔍 Diagnóstico
+                    </Link>
+
+                    {loggedIn && (
+                        <Link to="/pag/evolucion" style={{ color: "#444", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}
+                            className="hover:text-[#C4622D] transition-colors">
+                            Evolución
+                        </Link>
+                    )}
 
                     {loggedIn ? (
                         <button

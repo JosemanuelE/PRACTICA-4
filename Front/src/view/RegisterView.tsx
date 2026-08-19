@@ -1,8 +1,8 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import ErrorMessage from "../components/ErrorMessage"
-import { API_BASE, setUserToken } from "../config/api"
+import { API_BASE } from "../config/api"
 
 type RegisterFormValues = {
   name: string
@@ -12,9 +12,9 @@ type RegisterFormValues = {
 }
 
 export default function RegisterView() {
-  const navigate = useNavigate()
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null)
 
   const { register, watch, handleSubmit, formState: { errors } } = useForm<RegisterFormValues>({
     defaultValues: { name: '', email: '', password: '', PassWordConfirmation: '' }
@@ -44,21 +44,7 @@ export default function RegisterView() {
         return
       }
 
-      // 2. Login automático para obtener el token
-      const resLogin = await fetch(`${API_BASE}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password: pwd }),
-      })
-      if (resLogin.ok) {
-        const dataLogin = await resLogin.json()
-        if (dataLogin.token) setUserToken(dataLogin.token)
-        // Redirigir directamente a cursos
-        navigate("/pag/cursos", { replace: true })
-      } else {
-        // Si el auto-login falla por cualquier razón, ir al login manual
-        navigate("/auth/login", { replace: true })
-      }
+      setRegisteredEmail(email)
     } catch {
       setSubmitError("No se pudo conectar con el servidor. ¿Está el backend en marcha?")
     } finally {
@@ -106,6 +92,21 @@ export default function RegisterView() {
             </Link>
           </p>
 
+          {registeredEmail ? (
+            <div className="rounded-2xl p-5 text-sm leading-relaxed" style={{ background: "#fff", border: "1px solid #e8ddd2" }}>
+              <p className="font-semibold mb-2" style={{ color: "#2D6A4F" }}>
+                Cuenta creada. Ahora confirma tu correo.
+              </p>
+              <p style={{ color: "#444" }}>
+                Enviamos un enlace a <strong>{registeredEmail}</strong>. Ábrelo para activar la cuenta.
+                Si no hay SMTP configurado, el enlace aparece en la terminal del backend.
+              </p>
+              <Link to="/auth/login" className="inline-block mt-4 font-bold" style={{ color: "#C4622D" }}>
+                Ir a iniciar sesión
+              </Link>
+            </div>
+          ) : (
+          <>
           <form onSubmit={handleSubmit(handleRegister)} className="flex flex-col gap-5" noValidate>
 
             {/* Nombre */}
@@ -215,6 +216,8 @@ export default function RegisterView() {
           <p className="text-xs text-center mt-8 leading-relaxed" style={{ color: 'rgba(68,68,68,0.5)' }}>
             Al registrarte, aceptas los Términos de Uso y la Política de Privacidad.
           </p>
+          </>
+          )}
         </div>
       </section>
     </div>

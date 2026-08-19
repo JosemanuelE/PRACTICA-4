@@ -1,34 +1,77 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { createUser, loginUser } from "./handlers";
+import * as userAuthHandlers from "./handlers";
 import { handleInputErrors } from "./middleware/validation";
-import { adminLogin } from "./handlers/adminAuth";
+import * as adminAuthHandlers from "./handlers/adminAuth";
 import { requireAdmin } from "./middleware/adminAuth";
 import { requireUser } from "./middleware/userAuth";
 import { getCoursesPublic } from "./handlers/coursesPublic";
 import * as adminCourses from "./handlers/adminCourses";
 import { handleCourseFileUpload } from "./middleware/uploadError";
+import { createDiagnostic, listMyDiagnostics } from "./handlers/diagnostics";
+import { rateLimitAuth } from "./middleware/rateLimitAuth";
+import {
+    forgotPassword,
+    resendVerification,
+    resetPassword,
+    verifyEmail,
+} from "./handlers/accountSecurity";
+import { listAuditLogs } from "./handlers/auditLogs";
 
 const router = Router();
 
 // ─── AUTH ───────────────────────────────────────────────────────────────────
 router.post(
     "/auth/register",
+    rateLimitAuth,
     body("name").notEmpty().withMessage("El nombre es obligatorio"),
     body("email").isEmail().withMessage("El email no es válido"),
     body("password")
         .isLength({ min: 8 })
         .withMessage("La contraseña debe tener al menos 8 caracteres"),
     handleInputErrors,
-    createUser
+    userAuthHandlers.createUser
 );
 
 router.post(
     "/auth/login",
+    rateLimitAuth,
     body("email").isEmail().withMessage("El email no es válido"),
     body("password").notEmpty().withMessage("La contraseña es obligatoria"),
     handleInputErrors,
-    loginUser
+    userAuthHandlers.loginUser
+);
+
+router.post(
+    "/auth/verify-email",
+    rateLimitAuth,
+    body("token").notEmpty().withMessage("El token es obligatorio"),
+    handleInputErrors,
+    verifyEmail
+);
+router.post(
+    "/auth/resend-verification",
+    rateLimitAuth,
+    body("email").isEmail().withMessage("El email no es válido"),
+    handleInputErrors,
+    resendVerification
+);
+router.post(
+    "/auth/forgot-password",
+    rateLimitAuth,
+    body("email").isEmail().withMessage("El email no es válido"),
+    handleInputErrors,
+    forgotPassword
+);
+router.post(
+    "/auth/reset-password",
+    rateLimitAuth,
+    body("token").notEmpty().withMessage("El token es obligatorio"),
+    body("password")
+        .isLength({ min: 8 })
+        .withMessage("La contraseña debe tener al menos 8 caracteres"),
+    handleInputErrors,
+    resetPassword
 );
 
 // ─── CURSOS: ruta pública (listado sin detalles) ─────────────────────────────
@@ -37,18 +80,24 @@ router.get("/api/courses", getCoursesPublic);
 // ─── CURSOS: ruta protegida — requiere JWT de usuario logueado ───────────────
 router.get("/api/courses/private", requireUser, getCoursesPublic);
 
+// ─── DIAGNÓSTICOS: guardar y consultar historial del usuario ────────────────
+router.post("/api/diagnostics", requireUser, createDiagnostic);
+router.get("/api/diagnostics", requireUser, listMyDiagnostics);
+
 // ─── ADMIN AUTH ──────────────────────────────────────────────────────────────
 router.post(
     "/admin/auth/login",
+    rateLimitAuth,
     body("email").isEmail().withMessage("El email no es válido"),
     body("password").notEmpty().withMessage("La contraseña es obligatoria"),
     handleInputErrors,
-    adminLogin
+    adminAuthHandlers.adminLogin
 );
 
 // ─── ADMIN PANEL ─────────────────────────────────────────────────────────────
 const adminRouter = Router();
 adminRouter.use(requireAdmin);
+adminRouter.get("/audit-logs", listAuditLogs);
 adminRouter.get("/courses", adminCourses.adminListCourses);
 adminRouter.post(
     "/courses",
