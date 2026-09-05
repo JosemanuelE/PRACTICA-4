@@ -83,6 +83,7 @@ CREATE TABLE diagnostics (
   CONSTRAINT fk_diag_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'Josema123';
-FLUSH PRIVILEGES;
+CREATE USER 'zapaterias'@'localhost' IDENTIFIED BY 'Josema123';
+GRANT ALL PRIVILEGES ON . TO 'zapaterias'@'localhost' WITH GRANT OPTION;
+
 -- select * from users;

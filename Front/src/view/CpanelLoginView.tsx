@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
 import { API_BASE, ADMIN_TOKEN_KEY } from "../config/api"
 import ErrorMessage from "../components/ErrorMessage"
+import PasswordInput from "../components/PasswordInput"
 
 export default function CpanelLoginView() {
     const navigate = useNavigate()
@@ -73,12 +74,12 @@ export default function CpanelLoginView() {
                         <label className="block text-xs font-semibold text-gray-300 mb-1">
                             Contraseña
                         </label>
-                        <input
-                            type="password"
+                        <PasswordInput
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             autoComplete="current-password"
+                            iconColor="#9ca3af"
                             className="w-full px-4 py-3 rounded-lg bg-[#3d3d3d] border border-gray-600 text-white text-sm outline-none focus:border-[#C4622D]"
                         />
                     </div>

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import ErrorMessage from "../components/ErrorMessage"
+import PasswordInput from "../components/PasswordInput"
 import { API_BASE } from "../config/api"
 
 type RegisterFormValues = {
@@ -153,8 +154,7 @@ export default function RegisterView() {
               <label className="text-xs font-semibold uppercase" style={{ color: '#2C2C2C', letterSpacing: '0.06em' }}>
                 Contraseña
               </label>
-              <input
-                type="password"
+              <PasswordInput
                 placeholder="Mínimo 8 caracteres"
                 autoComplete="new-password"
                 className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all duration-200"
@@ -174,8 +174,7 @@ export default function RegisterView() {
               <label className="text-xs font-semibold uppercase" style={{ color: '#2C2C2C', letterSpacing: '0.06em' }}>
                 Confirmar contraseña
               </label>
-              <input
-                type="password"
+              <PasswordInput
                 placeholder="Repite tu contraseña"
                 autoComplete="new-password"
                 className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all duration-200"

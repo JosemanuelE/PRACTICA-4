@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import ErrorMessage from "../components/ErrorMessage"
+import PasswordInput from "../components/PasswordInput"
 import { API_BASE } from "../config/api"
 
 type FormValues = { password: string; confirm: string }
@@ -61,8 +62,8 @@ export default function ResetPasswordView() {
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-semibold uppercase">Contraseña nueva</label>
-                            <input
-                                type="password"
+                            <PasswordInput
+                                autoComplete="new-password"
                                 className="w-full px-4 py-3.5 rounded-xl text-sm"
                                 style={{ border: "2px solid #e8ddd2" }}
                                 {...register("password", {
@@ -74,8 +75,8 @@ export default function ResetPasswordView() {
                         </div>
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-semibold uppercase">Confirmar</label>
-                            <input
-                                type="password"
+                            <PasswordInput
+                                autoComplete="new-password"
                                 className="w-full px-4 py-3.5 rounded-xl text-sm"
                                 style={{ border: "2px solid #e8ddd2" }}
                                 {...register("confirm", {

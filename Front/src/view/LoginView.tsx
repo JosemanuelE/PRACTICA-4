@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import ErrorMessage from "../components/ErrorMessage"
+import PasswordInput from "../components/PasswordInput"
 import { API_BASE, setUserToken } from "../config/api"
 
 type LoginFormValues = {
@@ -137,8 +138,7 @@ export default function LoginView() {
                             >
                                 Contraseña
                             </label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 autoComplete="current-password"
                                 placeholder="Tu contraseña"
                                 className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all duration-200"
