@@ -1,0 +1,10 @@
+# Dependencias
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+
+# Sistema
+.DS_Store
+*.log
