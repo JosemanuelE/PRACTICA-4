@@ -83,6 +83,51 @@ CREATE TABLE diagnostics (
   CONSTRAINT fk_diag_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE community_topics (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NULL,
+  category VARCHAR(40) NOT NULL,
+  title VARCHAR(160) NOT NULL,
+  content TEXT NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'visible',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_community_topics_feed (status, category, created_at),
+  INDEX idx_community_topics_author (user_id, created_at),
+  CONSTRAINT fk_community_topic_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE community_comments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  topic_id INT NOT NULL,
+  user_id INT NULL,
+  parent_comment_id INT NULL,
+  content TEXT NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'visible',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_community_comments_thread (topic_id, parent_comment_id, status, created_at),
+  INDEX idx_community_comments_author (user_id, created_at),
+  CONSTRAINT fk_community_comment_topic FOREIGN KEY (topic_id) REFERENCES community_topics(id) ON DELETE CASCADE,
+  CONSTRAINT fk_community_comment_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+  CONSTRAINT fk_community_comment_parent FOREIGN KEY (parent_comment_id) REFERENCES community_comments(id) ON DELETE CASCADE
+);
+
+CREATE TABLE community_reports (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  reporter_id INT NULL,
+  target_type VARCHAR(20) NOT NULL,
+  target_id INT NOT NULL,
+  reason VARCHAR(40) NOT NULL,
+  details VARCHAR(1000) NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'open',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_community_reports_queue (status, created_at),
+  INDEX idx_community_reports_target (target_type, target_id),
+  CONSTRAINT fk_community_report_user FOREIGN KEY (reporter_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
 CREATE USER 'zapaterias'@'localhost' IDENTIFIED BY 'Josema123';
 GRANT ALL PRIVILEGES ON . TO 'zapaterias'@'localhost' WITH GRANT OPTION;
 

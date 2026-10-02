@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { API_BASE, ADMIN_TOKEN_KEY } from "../config/api"
 import ErrorMessage from "../components/ErrorMessage"
+import CommunityModerationPanel from "./CommunityModerationPanel"
 
 type CourseVideo = {
     id: number
@@ -48,7 +49,7 @@ export default function CpanelDashboardView() {
     const [newTitle, setNewTitle] = useState("")
     const [newDesc, setNewDesc] = useState("")
     const [creating, setCreating] = useState(false)
-    const [tab, setTab] = useState<"courses" | "audit">("courses")
+    const [tab, setTab] = useState<"courses" | "audit" | "community">("courses")
     const [logs, setLogs] = useState<Array<{
         id: number
         email: string | null
@@ -175,7 +176,17 @@ export default function CpanelDashboardView() {
                     >
                         Registro de seguridad
                     </button>
+                    <button
+                        type="button"
+                        onClick={() => setTab("community")}
+                        className="px-4 py-2 rounded-lg text-sm"
+                        style={{ background: tab === "community" ? "#C4622D" : "#3d3d3d" }}
+                    >
+                        Comunidad
+                    </button>
                 </div>
+
+                {tab === "community" && <CommunityModerationPanel />}
 
                 {loadError && (
                     <div className="mb-6">

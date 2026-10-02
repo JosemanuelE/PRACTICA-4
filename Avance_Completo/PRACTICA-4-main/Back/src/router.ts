@@ -17,6 +17,21 @@ import {
     verifyEmail,
 } from "./handlers/accountSecurity";
 import { listAuditLogs } from "./handlers/auditLogs";
+import {
+    createCommunityComment,
+    createCommunityReport,
+    createCommunityTopic,
+    deleteCommunityComment,
+    deleteCommunityTopic,
+    getCommunityTopic,
+    listCommunityReports,
+    listHiddenCommunityContent,
+    listCommunityTopics,
+    moderateCommunityContent,
+    updateCommunityComment,
+    updateCommunityReport,
+    updateCommunityTopic,
+} from "./handlers/community";
 
 const router = Router();
 
@@ -87,6 +102,17 @@ router.get("/api/courses/private", requireUser, getCoursesPublic);
 router.post("/api/diagnostics", requireUser, createDiagnostic);
 router.get("/api/diagnostics", requireUser, listMyDiagnostics);
 
+// ─── COMUNIDAD: lectura pública y participación autenticada ────────────────
+router.get("/api/community/topics", listCommunityTopics);
+router.get("/api/community/topics/:id", getCommunityTopic);
+router.post("/api/community/topics", requireUser, createCommunityTopic);
+router.patch("/api/community/topics/:id", requireUser, updateCommunityTopic);
+router.delete("/api/community/topics/:id", requireUser, deleteCommunityTopic);
+router.post("/api/community/topics/:id/comments", requireUser, createCommunityComment);
+router.patch("/api/community/comments/:id", requireUser, updateCommunityComment);
+router.delete("/api/community/comments/:id", requireUser, deleteCommunityComment);
+router.post("/api/community/reports", requireUser, createCommunityReport);
+
 // ─── ADMIN AUTH ──────────────────────────────────────────────────────────────
 router.post(
     "/admin/auth/login",
@@ -101,6 +127,10 @@ router.post(
 const adminRouter = Router();
 adminRouter.use(requireAdmin);
 adminRouter.get("/audit-logs", listAuditLogs);
+adminRouter.get("/community/reports", listCommunityReports);
+adminRouter.get("/community/hidden", listHiddenCommunityContent);
+adminRouter.patch("/community/reports/:id", updateCommunityReport);
+adminRouter.patch("/community/:type/:id", moderateCommunityContent);
 adminRouter.get("/courses", adminCourses.adminListCourses);
 adminRouter.post(
     "/courses",

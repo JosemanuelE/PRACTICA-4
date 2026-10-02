@@ -8,6 +8,9 @@ import Diagnostic, { initDiagnosticModel } from "../models/Diagnostic";
 import AuthToken, { initAuthTokenModel } from "../models/AuthToken";
 import AuditLog, { initAuditLogModel } from "../models/AuditLog";
 import { initLoginGuardModel } from "../models/LoginGuard";
+import CommunityTopic, { initCommunityTopicModel } from "../models/CommunityTopic";
+import CommunityComment, { initCommunityCommentModel } from "../models/CommunityComment";
+import CommunityReport, { initCommunityReportModel } from "../models/CommunityReport";
 
 export let sequelize: Sequelize;
 
@@ -97,6 +100,9 @@ const connectBD = async () => {
         initAuthTokenModel(sequelize);
         initAuditLogModel(sequelize);
         initLoginGuardModel(sequelize);
+        initCommunityTopicModel(sequelize);
+        initCommunityCommentModel(sequelize);
+        initCommunityReportModel(sequelize);
 
         User.hasMany(Diagnostic, {
             foreignKey: "userId",
@@ -116,6 +122,40 @@ const connectBD = async () => {
             onDelete: "SET NULL",
         });
         AuditLog.belongsTo(User, { foreignKey: "userId" });
+
+        User.hasMany(CommunityTopic, {
+            foreignKey: "userId",
+            as: "communityTopics",
+            onDelete: "SET NULL",
+        });
+        CommunityTopic.belongsTo(User, { foreignKey: "userId", as: "author" });
+        User.hasMany(CommunityComment, {
+            foreignKey: "userId",
+            as: "communityComments",
+            onDelete: "SET NULL",
+        });
+        CommunityComment.belongsTo(User, { foreignKey: "userId", as: "author" });
+        CommunityTopic.hasMany(CommunityComment, {
+            foreignKey: "topicId",
+            as: "comments",
+            onDelete: "CASCADE",
+        });
+        CommunityComment.belongsTo(CommunityTopic, { foreignKey: "topicId", as: "topic" });
+        CommunityComment.hasMany(CommunityComment, {
+            foreignKey: "parentCommentId",
+            as: "replies",
+            onDelete: "CASCADE",
+        });
+        CommunityComment.belongsTo(CommunityComment, {
+            foreignKey: "parentCommentId",
+            as: "parent",
+        });
+        User.hasMany(CommunityReport, {
+            foreignKey: "reporterId",
+            as: "communityReports",
+            onDelete: "SET NULL",
+        });
+        CommunityReport.belongsTo(User, { foreignKey: "reporterId", as: "reporter" });
 
         Course.hasMany(CourseVideo, {
             foreignKey: "courseId",

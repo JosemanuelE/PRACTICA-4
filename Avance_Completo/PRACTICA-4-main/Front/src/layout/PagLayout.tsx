@@ -55,7 +55,7 @@ export default function Layout() {
                     backdropFilter: "blur(12px)",
                     borderBottom: "1px solid rgba(196,98,45,0.15)",
                 }}
-                className="w-full px-8 py-4 flex justify-between items-center"
+                className="w-full px-4 md:px-8 py-4 flex flex-wrap justify-between items-center gap-4"
             >
                 <Link
                     to="/pag/home"
@@ -65,7 +65,7 @@ export default function Layout() {
                     🏪 Pymes<span style={{ color: "#2D6A4F" }}>Seguras</span>
                 </Link>
 
-                <div className="flex items-center gap-6">
+                <div className="flex flex-wrap items-center gap-4 md:gap-6">
                     <Link to="/pag/home" style={{ color: "#444", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}
                         className="hover:text-[#C4622D] transition-colors">
                         Inicio
@@ -82,6 +82,11 @@ export default function Layout() {
                     <Link to="/pag/leyes" style={{ color: "#444", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500 }}
                         className="hover:text-[#C4622D] transition-colors">
                         Leyes
+                    </Link>
+
+                    <Link to="/pag/comunidad" style={{ color: "#444", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}
+                        className="hover:text-[#C4622D] transition-colors">
+                        Comunidad
                     </Link>
 
                     <Link to="/pag/diagnostico" style={{

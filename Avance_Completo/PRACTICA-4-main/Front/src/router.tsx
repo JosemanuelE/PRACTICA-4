@@ -12,6 +12,7 @@ import CpanelDashboardView from './view/CpanelDashboardView'
 import VerifyEmailView from './view/VerifyEmailView'
 import ForgotPasswordView from './view/ForgotPasswordView'
 import ResetPasswordView from './view/ResetPasswordView'
+import CommunityView from './view/CommunityView'
 
 export default function Router() {
     return (
@@ -32,6 +33,8 @@ export default function Router() {
                     <Route path="/pag/leyes" element={<LeyesView />} />
                     <Route path="/pag/diagnostico" element={<DiagnosticoView />} />
                     <Route path="/pag/evolucion" element={<EvolucionView />} />
+                    <Route path="/pag/comunidad" element={<CommunityView />} />
+                    <Route path="/pag/comunidad/:topicId" element={<CommunityView />} />
                 </Route>
             </Routes>
         </BrowserRouter>
