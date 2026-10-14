@@ -261,7 +261,7 @@ export default function LeyesView() {
                         Marcos de referencia que usamos
                     </h2>
                     <p style={{ color: "#666", maxWidth: 480, margin: "0.75rem auto 0", fontSize: "0.9rem" }}>
-                        Nuestro plan de acción y diagnósticos están alineados con estos estándares globales.
+                        Las recomendaciones toman estos marcos como referencia para proponer prácticas concretas.
                     </p>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", maxWidth: 900, margin: "0 auto" }}>
@@ -287,6 +287,9 @@ export default function LeyesView() {
                         </div>
                     ))}
                 </div>
+                <p style={{ color: "#666", maxWidth: 900, margin: "1.5rem auto 0", fontSize: "0.8rem", lineHeight: 1.6, textAlign: "center" }}>
+                    Estas referencias no determinan por sí solas qué obligaciones aplican a cada empresa ni constituyen una auditoría o certificación. La aplicabilidad puede depender del tratamiento de datos y del sector.
+                </p>
             </section>
 
             {/* ── LÍNEA DEL TIEMPO ── */}
